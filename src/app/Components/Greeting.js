@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import GameTypes from './GameTypes';
 
 const Greeting = () => {
   const [playerName, setPlayerName] = useState('');
@@ -14,8 +15,10 @@ const Greeting = () => {
 
   return (
     <div className='flex flex-col items-center justify-center w-full h-screen'>
+      <div className='text-5xl'>Tic-Tac-Toe</div>
+      <div className='text-xl'>Play against your friends or an AI</div>
       <div className='w-3/4 h-[600px] flex justify-center items-center'>
-        <div className='p-16 text-center bg-opacity-50 shadow-lg rounded-xl hero-container bg-slate-50'>
+        <div className='p-16 text-center shadow-lg bg-opacity-20 rounded-xl hero-container bg-slate-50'>
           <h1 className='text-2xl text-secondary'>
             Hi there! What do we call you?
           </h1>
@@ -35,6 +38,7 @@ const Greeting = () => {
           </form>
         </div>
       </div>
+      {playerName && <GameTypes playerName={playerName} />}
     </div>
   );
 };
