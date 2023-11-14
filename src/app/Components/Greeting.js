@@ -22,18 +22,18 @@ const Greeting = () => {
           <h1 className='text-2xl text-secondary'>
             Hi there! What do we call you?
           </h1>
-          <label htmlFor='playerName' className='sr-only'>
-            Your Name
-          </label>
-          <input
-            id='playerName'
-            type='text'
-            placeholder='Your Name'
-            value={playerName}
-            onChange={handleNameChange}
-            className='w-full max-w-xs my-6 shadow-sm input input-bordered'
-          />{' '}
           <form onSubmit={handleSubmit}>
+            <label htmlFor='playerName' className='sr-only'>
+              Your Name
+            </label>
+            <input
+              id='playerName'
+              type='text'
+              placeholder='Your Name'
+              value={playerName}
+              onChange={handleNameChange}
+              className='w-full max-w-xs my-6 shadow-sm input input-bordered'
+            />{' '}
             <button className='shadow-md btn btn-accent'>Let's play</button>
           </form>
         </div>
