@@ -1,13 +1,11 @@
 'use client';
 import Image from 'next/image';
-import Greeting from './Components/Greeting.js';
-import GameTypes from './Components/GameTypes.js';
+import Greeting from './pages/Greeting.js';
 
 export default function Home() {
   return (
     <main className='w-full h-screen bg-white'>
       <Greeting />
-      <GameTypes />
     </main>
   );
 }

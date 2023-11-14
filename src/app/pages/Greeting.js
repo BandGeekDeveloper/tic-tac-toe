@@ -1,9 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import GameTypes from './GameTypes';
 
 const Greeting = () => {
   const [playerName, setPlayerName] = useState('');
+  const router = useRouter();
 
   const handleNameChange = (e) => {
     setPlayerName(e.target.value);
@@ -11,6 +13,7 @@ const Greeting = () => {
 
   const handleSubmit = () => {
     localStorage.setItem('playerName', playerName);
+    router.push('/GameTypes');
   };
 
   return (
