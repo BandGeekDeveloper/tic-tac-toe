@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // this confirms the existence of the board
 const board = ref(Array(9).fill(null));
@@ -9,10 +9,8 @@ const board = ref(Array(9).fill(null));
 // this is used to determine whose turn it is
 const currentPlayer = ref("X");
 
-// this checks the board for a winner by looking for the same value in any of the winning combinations
+// this checks the board for a winner or draw
 const checkWinner = () => {
-  let winner;
-
   // possible 3 in a row combinations
   const winnningCombinations = [
     [0, 1, 2],
@@ -24,34 +22,72 @@ const checkWinner = () => {
     [0, 4, 8],
     [2, 4, 6],
   ];
-
-  // loop through all combinations to see if the value is the same
-  // if it is, we have a winner
-  // if not the loop continues
   for (const combination of winnningCombinations) {
     const [a, b, c] = combination;
-
     if (
       board.value[a] !== null &&
       board.value[a] === board.value[b] &&
       board.value[a] === board.value[c]
     ) {
-      winner = board.value[a];
-      return winner;
+      return board.value[a]; // 'X' or 'O'
     }
-    console.log(`${winner} wins!`);
   }
+  // If no winner and no empty cells, it's a draw
+  if (!board.value.includes(null)) {
+    return "draw";
+  }
+  return null;
 };
-
 // when a player makes a move it checks if the cell is empty
 // if it is the value is set to the current player
 // the current player toggles between "X" and "O"
 const makeMove = (i: number) => {
-  if (!board.value[i]) {
-    board.value[i] = currentPlayer.value;
-
-    currentPlayer.value = currentPlayer.value === "X" ? "O" : "X";
+  // Prevent moves if game is over
+  if (checkWinner() || board.value[i]) {
+    return;
   }
+  board.value[i] = currentPlayer.value;
+  currentPlayer.value = currentPlayer.value === "X" ? "O" : "X";
+};
+
+// counts the number of wins for each player
+
+const xWins = ref(0);
+const oWins = ref(0);
+const draws = ref(0);
+const lastResult = ref(null);
+
+watch(
+  () => checkWinner(),
+  (newResult: null) => {
+    if (
+      (newResult === "X" || newResult === "O" || newResult === "draw") &&
+      lastResult.value !== newResult
+    ) {
+      countWins(newResult);
+      lastResult.value = newResult;
+    }
+    // Reset lastResult when board is reset
+    if (newResult === null) lastResult.value = null;
+  }
+);
+
+const countWins = (winner: string) => {
+  // Logic to count wins for 'X', 'O', and draws
+  if (winner === "X") {
+    xWins.value++;
+  } else if (winner === "O") {
+    oWins.value++;
+  } else if (winner === "draw") {
+    draws.value++;
+  }
+  return { xWins, oWins, draws };
+};
+
+const resetGame = () => {
+  board.value = Array(9).fill(null);
+  currentPlayer.value = "X";
+  lastResult.value = null;
 };
 </script>
 
@@ -67,6 +103,11 @@ const makeMove = (i: number) => {
         diagonally—wins the game. If the board fills up without either player achieving this, it’s
         called a Cat’s game and ends in a draw.
       </p>
+      <div class="flex flex-col items-center justify-between">
+        <h3>X Wins: {{ xWins }}</h3>
+        <h3>O Wins: {{ oWins }}</h3>
+        <h3>Draws: {{ draws }}</h3>
+      </div>
       <!--Game Board-->
       <div class="grid grid-rows-3 grid-cols-3 w-96 mx-auto py-8">
         <!--Each cell of the board is a button that calls makeMove when clicked-->
@@ -87,12 +128,10 @@ const makeMove = (i: number) => {
             'border-e-0': i % 3 === 2,
           }"
         >
-          <!--Button that calls makeMove when clicked-->
-          <!--The button is disabled if the cell already has a value-->
           <button
             class="h-full w-full cursor-pointer hover:bg-gray-100 text-4xl"
             @click="makeMove(i)"
-            :disabled="cell"
+            :disabled="cell || checkWinner()"
           >
             <span :class="cell === 'X' ? 'text-orange-500' : cell === 'O' ? 'text-black' : ''">
               {{ cell }}
@@ -109,22 +148,22 @@ const makeMove = (i: number) => {
           currentPlayer
         }}</span>
       </p>
-      <!--Display the winner if there is one-->
-      <p class="text-center text-2xl p-4" v-if="checkWinner()">
+      <!--Display the winner or draw if there is one-->
+      <p class="text-center text-2xl p-4" v-if="checkWinner() === 'X' || checkWinner() === 'O'">
         Winner:
-        <span class="font-bold" :class="checkWinner() === 'X' ? 'text-orange-500' : 'text-black'">{{
-          checkWinner()
-        }}</span>
+        <span class="font-bold" :class="checkWinner() === 'X' ? 'text-orange-500' : 'text-black'">
+          {{ checkWinner() }}
+        </span>
+      </p>
+      <p class="text-center text-2xl p-4" v-else-if="checkWinner() === 'draw'">
+        <span class="font-bold text-gray-500">Cat's game! It's a draw.</span>
       </p>
     </div>
     <div class="text-center p-4">
       <!--Button to reset the game-->
       <button
         class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        @click="
-          board = Array(9).fill(null);
-          currentPlayer = 'X';
-        "
+        @click="resetGame()"
       >
         Reset Game
       </button>
