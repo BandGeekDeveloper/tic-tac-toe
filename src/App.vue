@@ -59,11 +59,13 @@ const makeMove = (i: number) => {
   <div>
     <div>
       <!--Title and instructions of the game-->
-      <h1 class="text-center text-5xl p-8">Tic Tac Toe</h1>
-      <p class="text-center text-2xl p-4">
-        Each player takes turns trying to out smart their opponent adding an X or O on their turn.
-        The player who gets 3 X's or 3 O's in a row in any direction wins. If there comes a point
-        where no one can get 3 in a row this is know as a Cat's game and is considered a draw.
+      <h1 class="text-center text-5xl p-8">Tic Tac <span class="text-orange-500">Toe</span></h1>
+      <p class="text-center text-xl p-4">
+        <span class="text-orange-500 text-2xl font-bold">Instructions:</span>
+        Each player takes turns placing an X or O on the board, aiming to outsmart their opponent.
+        The first player to get three of their marks in a row—horizontally, vertically, or
+        diagonally—wins the game. If the board fills up without either player achieving this, it’s
+        called a Cat’s game and ends in a draw.
       </p>
       <!--Game Board-->
       <div class="grid grid-rows-3 grid-cols-3 w-96 mx-auto py-8">
@@ -92,7 +94,9 @@ const makeMove = (i: number) => {
             @click="makeMove(i)"
             :disabled="cell"
           >
-            {{ cell }}
+            <span :class="cell === 'X' ? 'text-orange-500' : cell === 'O' ? 'text-black' : ''">
+              {{ cell }}
+            </span>
           </button>
         </div>
       </div>
@@ -100,11 +104,17 @@ const makeMove = (i: number) => {
     <div>
       <!--Display the current player-->
       <p class="text-center text-2xl p-4">
-        Current Player: <span class="font-bold">{{ currentPlayer }}</span>
+        Current Player:
+        <span class="font-bold" :class="currentPlayer === 'X' ? 'text-orange-500' : 'text-black'">{{
+          currentPlayer
+        }}</span>
       </p>
       <!--Display the winner if there is one-->
       <p class="text-center text-2xl p-4" v-if="checkWinner()">
-        Winner: <span class="font-bold">{{ checkWinner() }}</span>
+        Winner:
+        <span class="font-bold" :class="checkWinner() === 'X' ? 'text-orange-500' : 'text-black'">{{
+          checkWinner()
+        }}</span>
       </p>
     </div>
     <div class="text-center p-4">
